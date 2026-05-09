@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's Your Enneagram Type?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0d0b;
+    --surface: #1a1814;
+    --border: #2e2b24;
+    --text: #f0ead8;
+    --muted: #7a7060;
+    --accent: #c9a84c;
+    --accent2: #8b6914;
+    --glow: rgba(201,168,76,0.15);
+  }
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 24px;
+overflow-x: hidden;
+}
+
+body::before {
+content: ‘’;
+position: fixed;
+top: -40%;
+left: -20%;
+width: 80vw;
+height: 80vw;
+background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%);
+pointer-events: none;
+z-index: 0;
+}
+
+.container {
+max-width: 720px;
+width: 100%;
+position: relative;
+z-index: 1;
+}
+
+.hidden { display: none !important; }
+
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(16px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+
+.back-btn {
+background: none;
+border: none;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
+font-size: 0.65rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+cursor: pointer;
+margin-bottom: 28px;
+display: inline-flex;
+align-items: center;
+gap: 6px;
+transition: color 0.2s;
+padding: 0;
+}
+.back-btn:hover { color: var(–accent); }
+
+/* ══ LANDING ══ */
+#landing {
+text-align: center;
+animation: fadeUp 0.8s ease both;
+}
+
+.eyebrow {
+font-size: 0.65rem;
+letter-spacing: 0.35em;
+color: var(–accent);
+text-transform: uppercase;
+margin-bottom: 20px;
+}
+
+#landing h1 {
+font-family: ‘Playfair Display’, serif;
+font-size: clamp(2.2rem, 6vw, 3.6rem);
+line-height: 1.1;
+margin-bottom: 14px;
+}
+#landing h1 em { color: var(–accent); font-style: italic; }
+
+#landing .subtitle {
+font-size: 0.8rem;
+color: var(–muted);
+line-height: 1.75;
+max-width: 440px;
+margin: 0 auto 36px;
+}
+
+.landing-cards {
+display: grid;
+grid-template-columns: 1fr;
+gap: 12px;
+margin-bottom: 20px;
+}
+
+.landing-card {
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 26px 20px;
+cursor: pointer;
+text-align: left;
+transition: all 0.2s;
+position: relative;
+overflow: hidden;
+}
+.landing-card::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, var(–accent), transparent);
+opacity: 0;
+transition: opacity 0.2s;
+}
+.landing-card:hover { border-color: var(–accent2); }
+.landing-card:hover::before { opacity: 0.6; }
+
+.card-icon { font-size: 1.3rem; margin-bottom: 10px; display: block; }
+.card-label { font-size: 0.6rem; letter-spacing: 0.25em; color: var(–accent); text-transform: uppercase; margin-bottom: 5px; }
+.card-title { font-family: ‘Playfair Display’, serif; font-size: 1rem; color: var(–text); margin-bottom: 7px; line-height: 1.3; }
+.card-desc { font-size: 0.7rem; color: var(–muted); line-height: 1.6; }
+.card-cta { display: inline-block; margin-top: 12px; font-size: 0.63rem; letter-spacing: 0.15em; color: var(–accent); text-transform: uppercase; }
+
+.btn-start {
+display: inline-block;
+background: var(–accent);
+color: #0e0d0b;
+font-family: ‘DM Mono’, monospace;
+font-size: 0.75rem;
+font-weight: 500;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+padding: 14px 36px;
+border: none;
+cursor: pointer;
+transition: all 0.2s;
+clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+margin-top: 8px;
+}
+.btn-start:hover { background: #e0bc5a; transform: translateY(-2px); }
+
+/* ══ INFO PAGES ══ */
+#learn-what, #learn-types { animation: fadeUp 0.5s ease both; }
+
+.info-card {
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 34px;
+position: relative;
+margin-bottom: 16px;
+}
+.info-card::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, var(–accent), transparent);
+opacity: 0.45;
+}
+.info-card h2 { font-family: ‘Playfair Display’, serif; font-size: 1.45rem; margin-bottom: 16px; }
+.info-card h2 em { color: var(–accent); font-style: italic; }
+.info-card p { font-size: 0.79rem; color: var(–text); opacity: 0.8; line-height: 1.85; margin-bottom: 14px; }
+.info-card p:last-child { margin-bottom: 0; }
+.info-divider { border: none; border-top: 1px solid var(–border); margin: 18px 0; }
+.info-highlight { font-size: 0.72rem; color: var(–accent); letter-spacing: 0.04em; line-height: 1.7; }
+
+.types-grid { display: flex; flex-direction: column; gap: 9px; }
+
+.type-row {
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 18px 22px;
+display: grid;
+grid-template-columns: 44px 1fr;
+gap: 14px;
+align-items: start;
+transition: border-color 0.2s;
+}
+.type-row:hover { border-color: var(–accent2); }
+
+.type-num { font-family: ‘Playfair Display’, serif; font-size: 1.7rem; color: var(–accent); opacity: 0.3; line-height: 1; text-align: right; }
+.type-info-name { font-family: ‘Playfair Display’, serif; font-size: 0.98rem; color: var(–text); margin-bottom: 2px; }
+.type-info-tag { font-size: 0.6rem; color: var(–muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+.type-info-blurb { font-size: 0.72rem; color: var(–text); opacity: 0.62; line-height: 1.6; }
+
+/* ══ QUIZ ══ */
+#quiz { animation: fadeUp 0.4s ease both; }
+
+.progress-bar-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+.progress-bar-track { flex: 1; height: 2px; background: var(–border); overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(–accent); transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+.progress-label { font-size: 0.65rem; color: var(–muted); letter-spacing: 0.1em; white-space: nowrap; }
+
+.question-card {
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 30px;
+position: relative;
+animation: fadeUp 0.4s ease both;
+}
+.question-card::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, var(–accent), transparent);
+opacity: 0.45;
+}
+
+.scenario-label { font-size: 0.6rem; letter-spacing: 0.3em; color: var(–accent); text-transform: uppercase; margin-bottom: 9px; }
+.scenario-text { font-family: ‘Playfair Display’, serif; font-size: 1.08rem; line-height: 1.6; color: var(–text); margin-bottom: 7px; font-style: italic; }
+.question-text { font-size: 0.75rem; color: var(–muted); margin-bottom: 22px; line-height: 1.55; }
+
+.options { display: flex; flex-direction: column; gap: 8px; }
+
+.option {
+background: transparent;
+border: 1px solid var(–border);
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
+font-size: 0.75rem;
+line-height: 1.4;
+padding: 11px 15px;
+cursor: pointer;
+text-align: left;
+transition: all 0.18s;
+display: flex;
+align-items: center;
+gap: 11px;
+}
+.option:hover { border-color: var(–accent2); background: var(–glow); color: var(–accent); }
+.option.selected { border-color: var(–accent); background: rgba(201,168,76,0.1); color: var(–accent); }
+
+.option-letter { font-size: 0.58rem; color: var(–accent); min-width: 14px; opacity: 0.6; flex-shrink: 0; }
+.option.selected .option-letter { opacity: 1; }
+
+.btn-next {
+margin-top: 22px;
+background: transparent;
+border: 1px solid var(–accent);
+color: var(–accent);
+font-family: ‘DM Mono’, monospace;
+font-size: 0.7rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+padding: 11px 28px;
+cursor: pointer;
+transition: all 0.2s;
+opacity: 0;
+pointer-events: none;
+display: inline-block;
+}
+.btn-next.visible { opacity: 1; pointer-events: all; }
+.btn-next:hover { background: var(–glow); }
+
+/* ══ RESULT ══ */
+#result { animation: fadeUp 0.7s ease both; text-align: center; }
+
+.result-inner {
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 42px 34px 34px;
+position: relative;
+overflow: hidden;
+}
+.result-inner::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, var(–accent), transparent);
+}
+
+.result-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(201,168,76,0.08); border: 1px solid var(–accent2); padding: 5px 13px; font-size: 0.59rem; letter-spacing: 0.3em; color: var(–accent); text-transform: uppercase; margin-bottom: 16px; }
+.result-type-name { font-family: ‘Playfair Display’, serif; font-size: clamp(1.7rem, 5vw, 2.5rem); color: var(–text); margin-bottom: 6px; }
+.result-type-name em { color: var(–accent); font-style: italic; }
+.result-tagline { font-size: 0.67rem; color: var(–muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 24px; }
+.result-desc { font-size: 0.8rem; line-height: 1.85; color: var(–text); opacity: 0.84; max-width: 520px; margin: 0 auto 22px; text-align: left; }
+
+.traits { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; margin-bottom: 26px; }
+.trait { background: rgba(201,168,76,0.07); border: 1px solid var(–border); font-size: 0.62rem; letter-spacing: 0.15em; color: var(–accent); padding: 4px 10px; text-transform: uppercase; }
+
+.wings-section { border-top: 1px solid var(–border); padding-top: 18px; text-align: left; }
+.wings-label { font-size: 0.59rem; letter-spacing: 0.3em; color: var(–muted); text-transform: uppercase; margin-bottom: 7px; }
+.wings-text { font-size: 0.74rem; color: var(–text); opacity: 0.62; line-height: 1.7; }
+
+.result-actions { display: flex; gap: 10px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+.btn-ghost { background: transparent; border: 1px solid var(–border); color: var(–muted); font-family: ‘DM Mono’, monospace; font-size: 0.64rem; letter-spacing: 0.16em; text-transform: uppercase; padding: 10px 20px; cursor: pointer; transition: all 0.2s; }
+.btn-ghost:hover { border-color: var(–accent); color: var(–accent); }
+</style>
+
+</head>
+<body>
+<div class="container">
+
+  <!-- ══ LANDING ══ -->
+
+  <div id="landing">
+    <div class="eyebrow">Self-Discovery</div>
+    <h1>What's Your<br><em>Enneagram Type?</em></h1>
+    <p class="subtitle">Nine personality archetypes. One honest look at yourself. Learn first — or jump straight in.</p>
+
+```
+<div class="landing-cards">
+  <div class="landing-card" onclick="show('learn-all')">
+    <span class="card-icon">◎</span>
+    <div class="card-label">New to this? Start here</div>
+    <div class="card-title">What Is the Enneagram — and What Are the 9 Types?</div>
+    <div class="card-desc">A quick intro to how the Enneagram works, plus a breakdown of all nine personality types so you know what you're getting into before you start.</div>
+    <span class="card-cta">Learn more →</span>
+  </div>
+</div>
+
+<button class="btn-start" onclick="startQuiz()">Take the Quiz →</button>
+```
+
+  </div>
+
+  <!-- ══ LEARN: COMBINED ══ -->
+
+  <div id="learn-all" class="hidden">
+    <button class="back-btn" onclick="show('landing')">← Back</button>
+    <div class="info-card">
+      <h2>What Is the <em>Enneagram?</em></h2>
+      <p>The Enneagram is a personality framework built around nine core types — each defined not just by behavior, but by the deeper motivations, fears, and desires that drive it. Unlike tests that sort you by surface traits, the Enneagram tries to explain the <em>why</em> behind who you are.</p>
+      <p>The word comes from Greek: <em>ennea</em> (nine) + <em>grammos</em> (figure). Each type has a core fear and a core desire — and that fear quietly shapes everything about how a person lives, works, and relates to others.</p>
+      <p>The Enneagram also includes <strong>wings</strong> (the neighboring types that color your personality) and stress and growth directions that show how you behave at your worst and your best.</p>
+      <hr class="info-divider">
+      <div class="info-highlight">It's not about boxing you in. It's about understanding the patterns you already live by — so you can choose them more consciously.</div>
+    </div>
+
+```
+<div class="info-card" style="margin-top: 10px;">
+  <h2>The <em>9 Types</em></h2>
+  <div class="types-grid" id="typesGrid"></div>
+</div>
+
+<div style="text-align:center; margin-top: 18px;">
+  <button class="btn-start" onclick="startQuiz()">Take the Quiz →</button>
+</div>
+```
+
+  </div>
+
+  <!-- ══ QUIZ ══ -->
+
+  <div id="quiz" class="hidden">
+    <button class="back-btn" onclick="show('landing')">← Home</button>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="progress-label" id="progressLabel">1 / 10</div>
+    </div>
+    <div id="questionCard" class="question-card"></div>
+  </div>
+
+  <!-- ══ RESULT ══ -->
+
+  <div id="result" class="hidden">
+    <div class="result-inner" id="resultInner"></div>
+    <div class="result-actions">
+      <button class="btn-ghost" onclick="show('learn-all')">All 9 Types</button>
+      <button class="btn-ghost" onclick="startQuiz()">Retake Quiz</button>
+      <button class="btn-ghost" onclick="show('landing')">← Home</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function show(id) {
+  ['landing','learn-all','quiz','result'].forEach(s => {
+    document.getElementById(s).classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+const types = {
+  1: { name:"The Reformer", tagline:"Principled · Purposeful · Self-controlled", blurb:"Driven by a need to do things right. Holds high standards for themselves and the world.", desc:"You hold yourself to high standards and feel a deep sense of what's right and wrong. You notice imperfection not to criticize, but because you genuinely believe things can — and should — be better. You bring integrity and conviction everywhere you go. The shadow side: you can be hard on yourself (and others) when the ideal isn't met.", traits:["Principled","Organized","Idealistic","Self-critical","Fair"], wings:"1w9 — more withdrawn and philosophical. 1w2 — more warm and people-focused." },
+  2: { name:"The Helper", tagline:"Generous · Caring · People-pleasing", blurb:"Motivated by a need to be loved and needed. Gives freely, often at their own expense.", desc:"You're deeply attuned to what others need, often before they even know it themselves. Love and connection are your fuel — you give freely, sometimes at the expense of your own needs. People are drawn to your warmth and feel genuinely seen around you. The growth edge: learning to receive as freely as you give.", traits:["Warm","Generous","Empathetic","Relational","Giving"], wings:"2w1 — more principled and duty-driven. 2w3 — more charming and image-aware." },
+  3: { name:"The Achiever", tagline:"Driven · Adaptable · Image-conscious", blurb:"Motivated by a need to feel valuable. Excels at reading the room and getting results.", desc:"You're wired to succeed — and you do. You adapt naturally to what a situation needs, read the room, and execute. You care about results, recognition, and being seen as capable. Beneath the productivity is a genuine desire to be loved for who you are, not just what you accomplish.", traits:["Ambitious","Efficient","Confident","Adaptable","Driven"], wings:"3w2 — more charming and relationship-oriented. 3w4 — more introspective and unique." },
+  4: { name:"The Individualist", tagline:"Expressive · Sensitive · Self-aware", blurb:"Motivated by a need to be authentic. Feels deeply and searches for meaning in everything.", desc:"You feel things at a depth most people don't reach, and you're drawn to authenticity above almost anything else. You have a rich inner world, a distinctive sense of self, and a longing to be truly seen. You're often creative, emotionally honest, and unafraid of the darker parts of life.", traits:["Authentic","Creative","Emotionally deep","Sensitive","Expressive"], wings:"4w3 — more ambitious and socially engaged. 4w5 — more withdrawn and cerebral." },
+  5: { name:"The Investigator", tagline:"Perceptive · Private · Analytical", blurb:"Motivated by a need to understand. Observes more than participates; prizes knowledge above all.", desc:"You live in your mind and you like it that way. You observe more than you participate, and you prize competence, depth, and genuine understanding. You protect your energy carefully and share yourself with a select few. The growth edge: trusting that you already have enough to fully engage.", traits:["Analytical","Perceptive","Independent","Private","Curious"], wings:"5w4 — more imaginative and emotionally expressive. 5w6 — more practical and loyal." },
+  6: { name:"The Loyalist", tagline:"Committed · Vigilant · Dependable", blurb:"Motivated by a need for security. Loyal, prepared, and always thinking ahead.", desc:"You think in contingencies, prepare for what could go wrong, and value loyalty and trust above almost anything. You're the person people count on — dependable, thoughtful, and real. Your mind works hard to keep you and the people you love safe, sometimes at the cost of your own peace.", traits:["Loyal","Prepared","Warm","Vigilant","Dependable"], wings:"6w5 — more withdrawn and analytical. 6w7 — more outgoing and optimistic." },
+  7: { name:"The Enthusiast", tagline:"Spontaneous · Optimistic · Scattered", blurb:"Motivated by a need to stay happy. Chases possibility and reframes pain into potential.", desc:"You're energized by possibility. New experiences, ideas, and adventures light you up, and your enthusiasm is genuinely contagious. You can find the bright side almost anywhere. The shadow: difficulty sitting with discomfort, and a tendency to move fast to avoid processing what's hard.", traits:["Enthusiastic","Optimistic","Spontaneous","Fun","Visionary"], wings:"7w6 — more loyal and warm. 7w8 — more bold and assertive." },
+  8: { name:"The Challenger", tagline:"Powerful · Direct · Protective", blurb:"Motivated by a need to stay in control. A natural leader who fiercely protects those they love.", desc:"You lead. You protect. You don't do half-measures or pretend. You have a natural gravitational pull and people either fall in line or feel challenged by you — and you're fine with both. Beneath the strength is a fierce protectiveness of those you care about.", traits:["Assertive","Protective","Direct","Confident","Intense"], wings:"8w7 — more energetic and pleasure-seeking. 8w9 — more steady and diplomatic." },
+  9: { name:"The Peacemaker", tagline:"Accepting · Steady · Conflict-avoidant", blurb:"Motivated by a need for peace. Sees all sides, holds space, and keeps the harmony.", desc:"You bring a rare kind of calm that people are drawn to. You see all sides, hold space without judgment, and have a gift for making conflict dissolve. The shadow: this can lead you to avoid your own voice and what you actually want. The growth edge: knowing your wants matter just as much as everyone else's.", traits:["Peaceful","Accepting","Empathetic","Steady","Easygoing"], wings:"9w8 — more assertive and grounded. 9w1 — more principled and idealistic." }
+};
+
+// Render types list
+const grid = document.getElementById('typesGrid');
+for (let i = 1; i <= 9; i++) {
+  const t = types[i];
+  grid.innerHTML += `<div class="type-row"><div class="type-num">${i}</div><div><div class="type-info-name">${t.name}</div><div class="type-info-tag">${t.tagline}</div><div class="type-info-blurb">${t.blurb}</div></div></div>`;
+}
+
+const questions = [
+  {
+    scenario: "Your plans just fell through. You have the whole evening free.",
+    question: "What do you reach for first?",
+    options: [
+      { text: "Reorganize or catch up on something I've been putting off", types: [1] },
+      { text: "Check in on a friend who's been on my mind", types: [2] },
+      { text: "Work on a personal goal or get ahead on something", types: [3] },
+      { text: "Journal, listen to music, or sit with my feelings", types: [4] },
+      { text: "Dive into something I'm curious about — read, research", types: [5] },
+      { text: "Text people or find plans so the night isn't unstructured", types: [6] },
+      { text: "Find something spontaneous and fun last-minute", types: [7] },
+      { text: "Do exactly what I want without compromising", types: [8] },
+      { text: "Whatever feels easiest — watch something, decompress", types: [9] },
+    ]
+  },
+  {
+    scenario: "You're in a group project and the leader's approach is clearly off.",
+    question: "What do you do?",
+    options: [
+      { text: "Say something directly — someone has to", types: [1, 8] },
+      { text: "Quietly offer to help fix it without embarrassing them", types: [2] },
+      { text: "Subtly take on more to make sure the outcome is good", types: [3] },
+      { text: "Step back — if no one else sees it, maybe it's not my problem", types: [4, 9] },
+      { text: "Analyze what's wrong and wait for the right moment", types: [5] },
+      { text: "Second-guess myself — maybe they know something I don't", types: [6] },
+      { text: "Pitch a completely different idea with energy", types: [7] },
+      { text: "Step in and take over before it falls apart", types: [8] },
+    ]
+  },
+  {
+    scenario: "A close friend gives you feedback that stings a little.",
+    question: "Your gut reaction is...",
+    options: [
+      { text: "Reflect hard — were they right? I replay what I've done recently.", types: [1] },
+      { text: "Feel hurt, but focus on whether they said it kindly", types: [2] },
+      { text: "Take it as data and think about how to improve", types: [3] },
+      { text: "Feel it deeply and need time alone to process", types: [4] },
+      { text: "Detach and assess — is the feedback actually valid?", types: [5] },
+      { text: "Worry — does this mean the friendship is shakier than I thought?", types: [6] },
+      { text: "Shake it off quickly. I don't want to dwell.", types: [7] },
+      { text: "Push back if I think they're off base", types: [8] },
+      { text: "Feel uncomfortable but try not to make it a whole thing", types: [9] },
+    ]
+  },
+  {
+    scenario: "You finish a heavy documentary about global poverty and close your laptop.",
+    question: "What are you thinking about for the next hour?",
+    options: [
+      { text: "How broken the systems are and how things should be different", types: [1] },
+      { text: "The specific people in it — I feel genuinely connected to them", types: [2] },
+      { text: "Ways I could channel this feeling into something meaningful", types: [3] },
+      { text: "How heavy the world feels. I just sit with that.", types: [4] },
+      { text: "I want to understand the root causes — economics, history, policy", types: [5] },
+      { text: "Anxiety that the world is more unstable than I let myself believe", types: [6] },
+      { text: "I move on but feel inspired to do something — donate, share, act", types: [7] },
+      { text: "Frustration that people in power let this happen", types: [8] },
+      { text: "It lingers, but I try not to let it disturb my peace too much", types: [9] },
+    ]
+  },
+  {
+    scenario: "Someone at a party is loudly sharing opinions you strongly disagree with.",
+    question: "How do you handle it?",
+    options: [
+      { text: "Wait for a pause and respectfully but firmly correct them", types: [1] },
+      { text: "Find common ground and keep the mood light", types: [2, 9] },
+      { text: "Redirect the conversation somewhere more interesting", types: [3, 7] },
+      { text: "Get quietly annoyed and drift toward other people", types: [4] },
+      { text: "Say little but mentally note everything they say", types: [5] },
+      { text: "Wonder if I'm actually the one who's wrong — feel uneasy", types: [6] },
+      { text: "Challenge them. It might get spicy, but I'm confident.", types: [8] },
+      { text: "Disengage internally. Not worth the energy.", types: [9] },
+    ]
+  },
+  {
+    scenario: "Someone you really respect gives you unexpected praise.",
+    question: "Your honest internal reaction is...",
+    options: [
+      { text: "Relief — but also, did I actually deserve it?", types: [1] },
+      { text: "Warmth. Knowing I made a difference to someone I care about is everything.", types: [2] },
+      { text: "Validation. I work hard and it's good to know it shows.", types: [3] },
+      { text: "Joy mixed with suspicion — do they actually see the real me?", types: [4] },
+      { text: "Awkward appreciation. I don't know how to hold this attention.", types: [5] },
+      { text: "I want to know exactly what they praised so I can keep doing it", types: [6] },
+      { text: "Thrilled — already thinking about what I'll do next", types: [7] },
+      { text: "Satisfaction. I knew I was capable. Good to have it confirmed.", types: [8] },
+      { text: "A quiet glow. I didn't need it, but it feels really nice.", types: [9] },
+    ]
+  },
+  {
+    scenario: "You have a whole month with zero obligations. Nothing you have to do.",
+    question: "How does that honestly feel?",
+    options: [
+      { text: "I'd set goals anyway. I can't just let that time go to waste.", types: [1, 3] },
+      { text: "I'd spend it with people I love. That's where I find purpose.", types: [2] },
+      { text: "Honestly a little aimless unless I'm building toward something", types: [3] },
+      { text: "Dreamy — finally space to create, feel, and just be", types: [4] },
+      { text: "Bliss. Read, research, think. Zero obligations is a gift.", types: [5] },
+      { text: "Uncomfortable — I'd probably build a schedule just to feel grounded", types: [6] },
+      { text: "I'd fill every day with something new. This is what I live for.", types: [7] },
+      { text: "I'd take charge of it and make it count somehow", types: [8] },
+      { text: "Peaceful. I'd finally let myself drift without guilt.", types: [9] },
+    ]
+  },
+  {
+    scenario: "A close friend is going through something hard. They haven't asked for help.",
+    question: "What do you do?",
+    options: [
+      { text: "Think about what the right thing to do is — then do that", types: [1] },
+      { text: "Show up. I don't need to be asked — I can tell when someone needs me.", types: [2] },
+      { text: "Check in but respect their space and process", types: [3, 5] },
+      { text: "Be present with them emotionally, even if I say very little", types: [4] },
+      { text: "Research how best to support someone in their situation first", types: [5] },
+      { text: "Worry about them but wonder if reaching out might make things worse", types: [6] },
+      { text: "Reach out with something fun or uplifting to pull them out of it", types: [7] },
+      { text: "Offer concrete help directly, whether they asked for it or not", types: [8] },
+      { text: "Stay available if they want me, but not push", types: [9] },
+    ]
+  },
+  {
+    scenario: "Choice: speak in front of 500 people, or write an anonymous piece read by 50,000.",
+    question: "Which do you pick — and why?",
+    options: [
+      { text: "The essay — I want the ideas to speak, not me personally", types: [1, 5] },
+      { text: "The speech — I want to feel the real connection with a live audience", types: [2, 4] },
+      { text: "The speech — I want to own the room and be remembered", types: [3, 8] },
+      { text: "The essay — anonymous reach feels more honest and meaningful", types: [4] },
+      { text: "The essay — anonymous is honestly ideal, no spotlight needed", types: [5] },
+      { text: "Whichever I'd feel more prepared for. I'd think it through carefully first.", types: [6] },
+      { text: "The speech — live energy is electric and I love that", types: [7] },
+      { text: "Either is fine. I just want to be useful, not the center of attention.", types: [9] },
+    ]
+  },
+  {
+    scenario: "You're alone at the end of a genuinely hard week, reflecting.",
+    question: "The thought that surfaces most naturally is...",
+    options: [
+      { text: "Did I do things the right way? I replay moments I could have handled better.", types: [1] },
+      { text: "I hope the people around me feel cared for. That's what really matters.", types: [2] },
+      { text: "What did I actually accomplish? Did I move the needle on what matters?", types: [3] },
+      { text: "I feel the whole week in waves — the highs, the lows, all of it", types: [4] },
+      { text: "I mentally file everything. I need to understand it before I can let go.", types: [5] },
+      { text: "Was I safe? Did I handle things right? What did people think of me?", types: [6] },
+      { text: "Already thinking about next week. Hard weeks are just part of the ride.", types: [7] },
+      { text: "Did I stand my ground? Did I fight for what I believe in?", types: [8] },
+      { text: "I just want stillness. I need to reset and find my peace again.", types: [9] },
+    ]
+  }
+];
+
+let scores = {}, currentQ = 0, selectedOption = null;
+
+function startQuiz() {
+  for (let i = 1; i <= 9; i++) scores[i] = 0;
+  currentQ = 0;
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  selectedOption = null;
+  const q = questions[currentQ];
+  const total = questions.length;
+  document.getElementById('progressFill').style.width = ((currentQ / total) * 100) + '%';
+  document.getElementById('progressLabel').textContent = `${currentQ + 1} / ${total}`;
+
+  const letters = 'ABCDEFGHI';
+  const card = document.getElementById('questionCard');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'fadeUp 0.4s ease both';
+
+  card.innerHTML = `
+    <div class="scenario-label">↳ Scenario ${currentQ + 1}</div>
+    <div class="scenario-text">${q.scenario}</div>
+    <div class="question-text">${q.question}</div>
+    <div class="options">
+      ${q.options.map((opt, i) => `
+        <button class="option" onclick="selectOption(${i})">
+          <span class="option-letter">${letters[i]}</span>
+          <span>${opt.text}</span>
+        </button>
+      `).join('')}
+    </div>
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">
+      ${currentQ < total - 1 ? 'Next →' : 'See My Type →'}
+    </button>
+  `;
+}
+
+function selectOption(i) {
+  selectedOption = i;
+  document.querySelectorAll('.option').forEach((el, idx) => el.classList.toggle('selected', idx === i));
+  document.getElementById('btnNext').classList.add('visible');
+}
+
+function nextQuestion() {
+  if (selectedOption === null) return;
+  questions[currentQ].options[selectedOption].types.forEach(t => scores[t]++);
+  currentQ++;
+  currentQ < questions.length ? renderQuestion() : showResult();
+}
+
+function showResult() {
+  const topType = Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
+  const t = types[topType];
+  document.getElementById('resultInner').innerHTML = `
+    <div class="result-badge">✦ Your Enneagram Type</div>
+    <div class="result-type-name">Type ${topType} — <em>${t.name}</em></div>
+    <div class="result-tagline">${t.tagline}</div>
+    <div class="result-desc">${t.desc}</div>
+    <div class="traits">${t.traits.map(tr => `<span class="trait">${tr}</span>`).join('')}</div>
+    <div class="wings-section">
+      <div class="wings-label">↳ Wings</div>
+      <div class="wings-text">${t.wings}</div>
+    </div>
+  `;
+  show('result');
+}
+</script>
+
+</body>
+</html>
